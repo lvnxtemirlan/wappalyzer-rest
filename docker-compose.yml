@@ -1,0 +1,11 @@
+version: "3.3"
+
+services:
+  nodejs:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    volumes:
+    - ./:/usr/src/app
+    ports:
+    - 8089:8089
