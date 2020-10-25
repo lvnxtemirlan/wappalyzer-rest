@@ -23,17 +23,15 @@ const options = {
 
 router.get("/wappalyzer", async (req, res) => {
     try {
+        const urls = JSON.parse(req.query.urls);
         const wappalyzer = await new Wappalyzer(options);
         await wappalyzer.init();
 
-        // Optionally set additional request headers
-        const headers = {};
-        const site = await wappalyzer.open(req.query.url, headers);
-
-        // Optionally capture and output errors
-        site.on('error', console.error);
-
-        const results = await site.analyze();
+        const results = await Promise.all(
+            urls.map(async url => ({
+                url, results: await wappalyzer.open(url).analyze()
+            }))
+        );
         res.send(JSON.stringify(results, null, 2));
     } catch (e) {
         console.error(e);
